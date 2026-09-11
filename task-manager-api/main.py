@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 
 from db import create_db_and_tables
-from routers import tasks, meta
+from routers import tasks, meta, users
 
 app = FastAPI()
+
 
 
 @app.on_event("startup")
@@ -13,3 +14,4 @@ def on_startup():
 
 app.include_router(meta.router)
 app.include_router(tasks.router)
+app.include_router(users.router)
