@@ -1,6 +1,9 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel import Field, SQLModel, Session, select
 
+from auth import get_current_user
+from routers.users import User
+
 from db import get_session
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
@@ -33,7 +36,7 @@ def get_task(task_id: int, session: Session = Depends(get_session)):
         return task
     
 @router.post("", status_code=201)
-def create_task(task: Task, session: Session = Depends(get_session)):
+def create_task(task: Task, session: Session = Depends(get_session),current_user: User = Depends(get_current_user),):
     session.add(task)
     session.commit()
     session.refresh(task)
@@ -41,7 +44,7 @@ def create_task(task: Task, session: Session = Depends(get_session)):
 
 
 @router.delete("/{task_id}")
-def delete_task(task_id: int,session: Session = Depends(get_session) ):
+def delete_task(task_id: int,session: Session = Depends(get_session),current_user: User = Depends(get_current_user), ):
     task = session.get(Task, task_id)
     if task is None:
         raise HTTPException(status_code=404, detail="Task not found")
